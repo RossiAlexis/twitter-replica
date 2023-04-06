@@ -1,7 +1,6 @@
-import { SignIn, SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
+import { SignIn, SignInButton, useUser } from "@clerk/nextjs";
 import { type NextPage } from "next";
 import Head from "next/head";
-import Link from "next/link";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -9,7 +8,8 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { api } from "~/utils/api";
 import type { RouterOutputs } from "~/utils/api";
 import Image from "next/image";
-import { LoadingPage, LoadingSpinner } from "~/components/loading";
+import { LoadingPage } from "~/components/loading";
+
 dayjs.extend(relativeTime);
 const CreatePostWizard = () => {
   const { user } = useUser();
@@ -51,7 +51,7 @@ const PostView = (props: PostWithUser) => {
             post.createdAt
           ).fromNow()}`}</span>
         </div>
-        <span>{post.content}</span>
+        <span className="text-xl">{post.content}</span>
       </div>
     </div>
   );
