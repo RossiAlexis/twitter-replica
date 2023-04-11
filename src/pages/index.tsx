@@ -1,4 +1,4 @@
-import { SignIn, SignInButton, useUser } from "@clerk/nextjs";
+import { SignIn, SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 import { type NextPage } from "next";
 import Head from "next/head";
 
@@ -9,10 +9,20 @@ import { api } from "~/utils/api";
 import type { RouterOutputs } from "~/utils/api";
 import Image from "next/image";
 import { LoadingPage } from "~/components/loading";
+import { useState } from "react";
 
 dayjs.extend(relativeTime);
+
 const CreatePostWizard = () => {
   const { user } = useUser();
+  const [input, setInput] = useState("");
+  const ctx = api.useContext();
+  const { mutate, isLoading: isPosting } = api.post.create.useMutation({
+    onSuccess: () => {
+      setInput("");
+      void ctx.post.getAll.invalidate();
+    },
+  });
   if (!user) return null;
   return (
     <div className="flex w-full gap-3">
@@ -26,7 +36,12 @@ const CreatePostWizard = () => {
       <input
         placeholder="Type some Emojis!"
         className="grow bg-transparent outline-none"
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        type="text"
+        disabled={isPosting}
       />
+      <button onClick={() => mutate({ content: input })}>post</button>
     </div>
   );
 };
@@ -66,7 +81,7 @@ const Feed = () => {
   return (
     <>
       <div className="flex flex-col">
-        {[...data, ...data].map(({ post, author }) => (
+        {data.map(({ post, author }) => (
           <PostView key={post.id} post={post} author={author} />
         ))}
       </div>
